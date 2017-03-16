@@ -1,0 +1,172 @@
+syntax="proto2";
+package duel;
+option java_package="com.kongyt.duel.messages";
+
+
+// 消息ID定义规范
+// 前两个字节为消息模块ID
+// 后两个字节为同模块消息ID
+enum Msg
+{
+  // BaseModule
+  // 所有的Resquest(C2S)和Response(S2C)消息
+
+  // 匹配对手请求与回复
+  Match_Player_Req	= 0x00010001;
+  Match_Player_Res	= 0x00010002;
+
+
+  // 匹配成功通知S2C
+  Match_Player_Success_Noti = 0x00010003;
+  Match_Player_Success_On_Noti = 0x00010004;
+
+
+  // 开始游戏通知与响应
+  Game_Start_Noti	= 0x00010005;
+  Game_Start_On_Noti	= 0x00010006;
+
+
+  // 操作令牌
+  Operate_Token_Noti	= 0x00010007;
+  Operate_Token_On_Noti = 0x00010008;
+
+
+  // 玩家操作消息
+  Operate_Req		= 0x00010009;
+  Operate_Res		= 0x0001000A;
+
+  // 操作同步消息,服务器仅转发
+  Operate_Syn		= 0x0001000B;
+  
+  // 认输消息，服务器回复认输消息，通知对方玩家赢了，收到回复后主动结束游戏
+  Give_Up_Req		= 0x0001000C;
+  Give_Up_Res		= 0x0001000D;
+
+  // 通知玩家赢了
+  You_Win_Noti		= 0x0001000F;
+  You_Win_On_Noti	= 0x00010010;
+
+  // 游戏完成请求与回复
+  Game_Complete_Req	= 0x00010011;
+  Game_Complete_Res	= 0x00010012;
+
+
+  // 心跳请求与回复
+  Heart_Beat_Req	= 0x00010013;
+  Heart_Beat_Res	= 0x00010014;
+}
+
+message Request{
+  // 包含所有的Request消息
+  optional MatchPlayerReq matchPlayer	= 1;
+  optional OperateReq operate	= 2;
+  optional GiveUpReq  giveUp	= 3;
+  optional GameCompleteReq gameComplete	= 4;
+  optional HeartBeatReq	heartBeat= 5;
+}
+
+message Response{
+  required bool result	= 1;	// true表示应答成功，false表示应答失败
+  required bool lastResponse	= 2;	// 一个请求可以包含多个应答，用于指示是否是最后一个应答
+  optional string errorDescribe = 3;	// result为false时，描述错误信息
+
+  // 包含所有的Response消息
+  optional MatchPlayerRes matchPlayer = 4;
+  optional OperateRes	operate	= 5;
+  optional GiveUpRes	giveUp	= 6;
+  optional GameCompleteRes gameComplete= 7;
+  optional HeartBeatRes	heartBeat= 8;
+}
+
+message Notification{
+  // 包含所有服务器通知消息
+  optional MatchPlayerSuccessNoti matchPlayer	= 1;
+  optional GameStartNoti	gameStart	= 2;
+  optional OperateTokenNoti	operateToken	= 3;
+  optional YouWinNoti		youWin	= 4;
+}
+
+message OnNotification{
+  // 包含所有响应服务器通知消息
+  optional AnswerMatchPlayerSuccessNoti	answerMatchPlayer= 1;
+  optional AnswerGameStartNoti		answerGameStart= 2;
+  optional AnswerOperateTokenNoti	answerOperateToken= 3;
+  optional AnswerYouWinNoti		answerYouWin = 4;
+}
+
+message OperateSyn{
+  required int32 playerId	= 1;
+  optional float degree		= 2;
+  optional float power		= 3;
+}
+
+message MatchPlayerReq{
+  required string name		= 1;
+}
+
+message MatchPlayerRes{
+  required bool isMatching	= 1;
+}
+
+message OperateReq{
+  required int32 playerId	= 1;
+  optional float degree		= 2;
+  optional float power		= 3;
+}
+
+message OperateRes{
+  required bool isOperateOk	= 1;
+}
+
+message GiveUpReq{
+
+}
+
+message GiveUpRes{
+  required bool isGiveUpOk	= 1;
+}
+
+message GameCompleteReq{
+
+}
+
+message GameCompleteRes{
+  required bool isGameCompleteOk = 1;
+}
+
+message HeartBeatReq{
+}
+
+message HeartBeatRes{
+  required bool isOnLine	= 1;
+}
+
+message MatchPlayerSuccessNoti{
+  required int32 playerId	= 1;
+  required string peerName	= 2;
+  required int32 roleId		= 3;
+}
+
+message AnswerMatchPlayerSuccessNoti{
+  required bool isReady		= 1;
+}
+
+message GameStartNoti{
+}
+
+message AnswerGameStartNoti{
+}
+
+message OperateTokenNoti{
+  required bool haveToken	= 1;
+}
+
+message AnswerOperateTokenNoti{
+}
+
+message YouWinNoti{
+}
+
+message AnswerYouWinNoti{
+
+}
